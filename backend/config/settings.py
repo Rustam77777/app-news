@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'domen.com', 'www.domen.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'https://app-news-teal.vercel.app/', 'www.domen.com']
 
 # Application definition
 DJANGO_APPS = [
@@ -164,7 +164,7 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Укажите порт, на котором работает ваш Vue.js
     "http://127.0.0.1:5173",
-    "https://domen.com",
+    "https://app-news-teal.vercel.app/",
     "https://www.domen.com",
 ]
 
