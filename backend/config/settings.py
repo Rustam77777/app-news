@@ -169,7 +169,7 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Укажите порт, на котором работает ваш Vue.js
     "http://127.0.0.1:5173",
-    "https://app-news-teal.vercel.app/",
+    "https://app-news-teal.vercel.app",
     "https://app-news-pram.onrender.com",
 ]
 

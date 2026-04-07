@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Установка системных зависимостей
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
@@ -10,26 +10,29 @@ RUN apt-get update && apt-get install -y \
     vim \
     && rm -rf /var/lib/apt/lists/*
 
-# Копирование и установка Python зависимостей
+# Copy and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Создание непривилегированного пользователя с определенным UID/GID
+# Create unprivileged user
 RUN groupadd -r appuser -g 1000 && useradd -r -g appuser -u 1000 appuser
 
-# Копирование исходного кода
+# Copy project code
 COPY . .
 
-# Создание директорий для статических файлов, медиа и логов
+# Create directories for static files, media, and logs
 RUN mkdir -p /app/staticfiles /app/media /app/logs
 
-# Изменение владельца файлов на appuser
+# Collect static files (NEW LINE) ✅
+RUN python manage.py collectstatic --noinput
+
+# Change ownership of all files to appuser
 RUN chown -R appuser:appuser /app
 
-# Переключение на непривилегированного пользователя
+# Switch to unprivileged user
 USER appuser
 
 EXPOSE 8000
 
-# Команда по умолчанию
+# Default command
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
