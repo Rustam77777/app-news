@@ -24,7 +24,7 @@ COPY . .
 RUN mkdir -p /app/staticfiles /app/media /app/logs
 
 # Collect static files (NEW LINE) ✅
-RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput || true
 
 # Change ownership of all files to appuser
 RUN chown -R appuser:appuser /app
