@@ -101,7 +101,8 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ['title', 'content', 'image', 'category', 'status']
+        fields = ['id', 'slug', 'title', 'content', 'image', 'category', 'status']
+        read_only_fields = ['id', 'slug']
 
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user

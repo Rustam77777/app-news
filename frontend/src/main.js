@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import Toast, { POSITION } from 'vue-toastification'
 import router from './router'
 import App from './App.vue'
+import { useAuthStore } from '@/stores/auth' // ← add this
 
 import './assets/css/main.css'
 import 'vue-toastification/dist/index.css'
@@ -10,7 +11,6 @@ import 'vue-toastification/dist/index.css'
 const app = createApp(App)
 const pinia = createPinia()
 
-// Настройка Toast уведомлений
 const toastOptions = {
   position: POSITION.TOP_RIGHT,
   timeout: 5000,
@@ -31,5 +31,9 @@ const toastOptions = {
 app.use(pinia)
 app.use(router)
 app.use(Toast, toastOptions)
+
+// ← add these 3 lines before mount
+const authStore = useAuthStore()
+await authStore.initializeAuth()
 
 app.mount('#app')

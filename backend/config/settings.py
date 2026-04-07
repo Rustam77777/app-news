@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
 from decouple import config
-
+from corsheaders.defaults import default_headers
+print("DB NAME:", config('POSTGRES_DB', default='NOT FOUND'))
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
@@ -48,6 +49,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'authorization',
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
     {

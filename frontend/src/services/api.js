@@ -2,11 +2,12 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 import { useToast } from 'vue-toastification'
+import Cookies from 'js-cookie'
 
 const toast = useToast()
 
 // Базовая конфигурация API
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 
 // Создание экземпляра axios
 const api = axios.create({
@@ -18,17 +19,38 @@ const api = axios.create({
 })
 
 // Интерцептор запросов - добавляем токен авторизации
+// api.interceptors.request.use(
+//   (config) => {
+//     const authStore = useAuthStore()
+//     if (authStore.token) {
+//       config.headers.Authorization = `Bearer ${authStore.token}`
+//     }
+//     return config
+//   },
+//   (error) => {
+//     return Promise.reject(error)
+//   }
+// )
+
+
+
+// Then update the request interceptor (around line 20):
 api.interceptors.request.use(
   (config) => {
     const authStore = useAuthStore()
-    if (authStore.token) {
-      config.headers.Authorization = `Bearer ${authStore.token}`
+    const token = authStore.token || Cookies.get('access_token')
+
+    // Force remove any existing auth header first
+    delete config.headers['Authorization']
+    delete config.headers['authorization']
+
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
     }
+
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 
@@ -129,7 +151,7 @@ export const categoriesAPI = {
 export const postsAPI = {
   getAll: (params) => api.get('/api/v1/posts/', { params }),
   getById: (slug) => api.get(`/api/v1/posts/${slug}/`),
-  create: (data) => api.post('/api/v1/posts/', data),
+  create: (data, config = {}) => api.post('/api/v1/posts/', data, config),
   update: (slug, data) => api.put(`/api/v1/posts/${slug}/`, data),
   updatePartial: (slug, data) => api.patch(`/api/v1/posts/${slug}/`, data),
   delete: (slug) => api.delete(`/api/v1/posts/${slug}/`),
@@ -162,7 +184,7 @@ export const paymentAPI = {
 export const commentsAPI = {
   getAll: (params) => api.get('/api/v1/comments/', { params }),
   getById: (id) => api.get(`/api/v1/comments/${id}/`),
-  create: (data, config = {}) => api.post('/api/v1/posts/', data, config),
+  create: (data, config = {}) => api.post('/api/v1/comments/', data, config),
   update: (id, data) => api.put(`/api/v1/comments/${id}/`, data),
   updatePartial: (id, data) => api.patch(`/api/v1/comments/${id}/`, data),
   delete: (id) => api.delete(`/api/v1/comments/${id}/`),

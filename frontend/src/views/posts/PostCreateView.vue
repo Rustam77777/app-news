@@ -674,6 +674,7 @@ export default {
         // Используем store метод вместо прямого API вызова
         const newPost = await postsStore.createPost(requestData)
         
+        
         // Очищаем автосохранение
         if (autoSaveTimer.value) {
           clearInterval(autoSaveTimer.value)

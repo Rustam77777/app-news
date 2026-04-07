@@ -158,14 +158,25 @@ class PaymentService:
     @staticmethod
     def create_subscription_payment(user, plan: SubscriptionPlan) -> Tuple[Payment, Subscription]:
         """Создает платеж для подписки"""
-        # Создаем подписку
-        subscription = Subscription.objects.create(
-            user=user,
-            plan=plan,
-            status='pending',
-            start_date=timezone.now(),
-            end_date=timezone.now()  # Будет обновлено после оплаты
-        )
+        
+        # Get existing or create new subscription
+        try:
+            subscription = Subscription.objects.get(user=user)
+            subscription.plan = plan
+            subscription.status = 'pending'
+            subscription.start_date = timezone.now()
+            subscription.end_date = timezone.now()
+            subscription.save()
+            created = False
+        except Subscription.DoesNotExist:
+            subscription = Subscription.objects.create(
+                user=user,
+                plan=plan,
+                status='pending',
+                start_date=timezone.now(),
+                end_date=timezone.now()
+            )
+            created = True
 
         # Создаем платеж
         payment = Payment.objects.create(
@@ -180,8 +191,8 @@ class PaymentService:
         # Записываем в историю
         SubscriptionHistory.objects.create(
             subscription=subscription,
-            action='created',
-            description=f'Subscription created for plan {plan.name}'
+            action='created' if created else 'updated',
+            description=f'Subscription {"created" if created else "updated"} for plan {plan.name}'
         )
 
         return payment, subscription
