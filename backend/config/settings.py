@@ -4,6 +4,7 @@ from decouple import config
 from corsheaders.defaults import default_headers
 print("DB NAME:", config('POSTGRES_DB', default='NOT FOUND'))
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+import dj_database_url
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -74,16 +75,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('POSTGRES_DB', default='newssite'),
+#         'USER': config('POSTGRES_USER', default='newsuser'),
+#         'PASSWORD': config('POSTGRES_PASSWORD'),
+#         'HOST': config('DB_HOST', default='localhost'),
+#         'PORT': config('DB_PORT', default='5432', cast=int),
+#         'ATOMIC_REQUESTS': True,
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', default='newssite'),
-        'USER': config('POSTGRES_USER', default='newsuser'),
-        'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432', cast=int),
-        'ATOMIC_REQUESTS': True,
-    }
+    'default': dj_database_url.parse(os.getenv("DATABASE_URL"))
 }
 
 # Password validation
